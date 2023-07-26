@@ -2,7 +2,7 @@
   <div>
     <div class="inspx" :class="{ inspecting: enabled }" :style="inspxStyle">
       <div class="relative h-full w-full">
-        <div v-for="(box, i) in boxes" :key="i" class="flex flex-items-center justify-center" :class="'inspx-' + box.type" :style="{ left: box.x + 'px', top: box.y + 'px', width: box.w + 'px', height: box.h + 'px' }">
+        <div v-for="(box, i) in propBoxes" :key="i" class="flex flex-items-center justify-center" :class="'inspx-' + box.type" :style="{ left: box.x + 'px', top: box.y + 'px', width: box.w + 'px', height: box.h + 'px' }">
           <div class="size">{{ box.size }}</div>
         </div>
       </div>
@@ -16,6 +16,10 @@ import { useElementRects, useMouseElement } from './composable';
 import { computed, unref } from 'vue';
 const props = defineProps({
   margin: {
+    type: Boolean,
+    default: true,
+  },
+  border: {
     type: Boolean,
     default: true,
   },
@@ -35,6 +39,24 @@ const props = defineProps({
 const { alt } = useMagicKeys();
 const target = useMouseElement(alt);
 const { boxes, size } = useElementRects(target);
+const propBoxes = computed(() => {
+  const {margin, border, padding, size } = props;
+  return unref(boxes).filter(({type}) => {
+    if (margin && type=='margin') {
+      return true;
+    }
+    if (border && type=='border') {
+      return true;
+    }
+    if (padding && type=='padding') {
+      return true;
+    }
+    if (size && type=='size') {
+      return true;
+    }
+    return false;
+  })
+})
 const enabled = computed(() => unref(alt) && !props.disabled && unref(boxes) && unref(boxes).length);
 const inspxStyle = computed(() => {
   const { left, top, width, height, paddingTop, paddingRight, paddingBottom, paddingLeft, borderTop, borderRight, borderBottom, borderLeft, marginTop, marginRight, marginBottom, marginLeft } = unref(size);
