@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import inspx from '../index.vue'
+import inspx from '../'
 const version = 2 + 1
 </script>
 
